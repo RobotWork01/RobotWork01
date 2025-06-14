@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<title>MSDOS_01</title>
+<style>
+.sample_box6 {
+    padding: 1em 1.5em;
+    margin: 2em 0;
+    background-color:lightblue; /*背景色*/#f6faee;
+    border-left: solid 10px darkblue; /*左ライン*/#6b8e23;
+    color:#000000;/*文字色*/
+}
+.sample_box6 p {
+    margin: 0; 
+    padding: 0;
+}
+</style>
+
+</head>
+<body bgcolor="ivory">
+<div class="sample_box6" style="width:80%;height:20px;">
+<span style="font-size:23px;">RobotWork01_MSDOS_01</span>
+<span style="text-align:right;">&nbsp;&nbsp;サクラエディタのGrep検索</span>
+&nbsp;&nbsp;<a href="https://robotwork01.github.io/RobotWork01/RobotWork01.html">戻る</a>
+&nbsp;&nbsp;<a href="https://github.com/RobotWork01/UiPath01/blob/main/README.md">ReadMe</a>
+</div>
+<pre>
+<p>
+<div style="background-color:khaki;width:60em;height:25px;display: table-cell;vertical-align: middle;><font size="5" color="white" face="メイリオ">
+<pre><b>   ●MSDOSバッチプログラム  </b></pre>
+</div>
+<textarea name="kansou" rows="35" cols="130" style="background-color: lightblue;">
+@ECHO OFF
+rem *-----------------------------------------------------------------------------------------------*
+rem * サクラエディタのgrep置換をコマンドラインで実行 
+rem *
+rem * 参考URL：https://denor.jp/サクラエディタのgrep検索をコマンドラインで実行
+rem * 使用環境：
+rem * このMSDOSバッチファイルは対象ファイルと同じフォルダに置いて下さい
+rem *
+rem * 実行方法：
+rem * cd "C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）"
+rem * サクラエディタGREP検索.bat
+rem *-----------------------------------------------------------------------------------------------*
+rem ■カレントパスを退避する
+set PWD=%~dp0
+echo カレントパス:%PWD%
+
+rem ■サクラエディタ起動ＥＸＥ
+rem set SKR="%ProgramFiles(x86)%\sakura\sakura.exe"
+set SKR="C:\Program Files (x86)\sakura\sakura.exe"
+echo サクラエディタ起動ＥＸＥ:%SKR%
+
+:main
+rem ■対象のファイルの拡張子指定
+rem set TYP="*.txt"
+set TYP="*.txt"
+echo 対象のファイル:%TYP%
+
+rem SRCに変更前、DSTに変更後の文字列をセットします
+rem set SRC="☆検索する文字列☆"
+set SRC="太陽"
+echo %DATE% %TIME% ***********************************************************************************
+echo %DATE% %TIME% * 検索文字列 SRC=%SRC%
+echo %DATE% %TIME% ***********************************************************************************
+echo %DATE% %TIME% %SKR% -GREPMODE -GCODE=99 -GOPT=U -GKEY=%SRC% -GREPR=%DST% -GFILE=%TYP% -GFOLDER="%PWD%"
+%SKR% -GREPMODE -GCODE=99 -GOPT=U -GKEY=%SRC% -GFILE=%TYP% -GFOLDER="%PWD%"
+type %TYP%
+
+rem --------------------------------------------------------------------------------------------------
+rem 複数回検索したい場合set SRCから%SKR%までの2行をコピペで追記して下さい
+rem 具体例
+rem set SRC="☆検索する文字列☆"
+rem %SKR% -GREPMODE -GCODE=99 -GOPT=U -GKEY=%SRC% -GFILE=%TYP% -GFOLDER="%PWD%"
+rem --------------------------------------------------------------------------------------------------
+pause
+exit
+</textarea>
+<p/>
+<div style="background-color:khaki;width:60em;height:25px;display: table-cell;vertical-align: middle;><font size="5" color="white" face="メイリオ">
+<pre><b>   ●MSDOSバッチプログラム実行結果  </b></pre>
+</div>
+<textarea name="kansou" rows="15" cols="130" style="background-color: lightblue;">
+Microsoft Windows [Version 10.0.19044.3086]
+(c) Microsoft Corporation. All rights reserved.
+C:\Users\XXXXX>cd "C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）"
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）>サクラエディタGREP検索.bat
+カレントパス:C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\
+サクラエディタ起動ＥＸＥ:"C:\Program Files (x86)\sakura\sakura.exe"
+対象のファイル:"*.txt"
+2025/06/14 23:05:23.81 ***********************************************************************************
+2025/06/14 23:05:23.81 * 検索文字列 SRC="太陽"
+2025/06/14 23:05:23.81 ***********************************************************************************
+2025/06/14 23:05:23.82 "C:\Program Files (x86)\sakura\sakura.exe" -GREPMODE -GCODE=99 -GOPT=U -GKEY="太陽" -GREPR= -GFILE="*.txt" -GFOLDER="C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\"
+</textarea>
+<p/><p/>
+<p/>
+<div style="background-color:khaki;width:60em;height:25px;display: table-cell;vertical-align: middle;><font size="5" color="white" face="メイリオ">
+<pre><b>   ●サクラエディタ実行結果  </b></pre>
+</div>
+<textarea name="kansou" rows="15" cols="130" style="background-color: lightblue;">
+□検索条件  "太陽"
+検索対象   *.txt
+フォルダ   C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\
+    (サブフォルダを検索しない)
+    (英大文字小文字を区別しない)
+    (文字コードセットの自動判別)
+    (一致した箇所のみ出力)
+
+
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\input.txt(1,22)  [Unicode]: 太陽
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\input.txt(2,4)  [Unicode]: 太陽
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\output.txt(1,22)  [Unicode]: 太陽
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\output.txt(2,4)  [Unicode]: 太陽
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\test1.txt(1,22)  [Unicode]: 太陽
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\test1.txt(2,4)  [Unicode]: 太陽
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\test2.txt(1,22)  [Unicode]: 太陽
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\test2.txt(2,4)  [Unicode]: 太陽
+8 個が検索されました。
+</textarea>
+
+</pre>
+</body>
+</html>
