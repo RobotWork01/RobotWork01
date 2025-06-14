@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<title>PowerShell_01</title>
+<style>
+.sample_box6 {
+    padding: 1em 1.5em;
+    margin: 2em 0;
+    background-color:lightblue; /*背景色*/#f6faee;
+    border-left: solid 10px darkblue; /*左ライン*/#6b8e23;
+    color:#000000;/*文字色*/
+}
+.sample_box6 p {
+    margin: 0; 
+    padding: 0;
+}
+</style>
+
+</head>
+<body bgcolor="ivory">
+<div class="sample_box6" style="width:80%;height:20px;">
+<span style="font-size:23px;">RobotWork01_PowerShell_01</span>
+<span style="text-align:right;">&nbsp;&nbsp;MSDOSでサクラエディタのGrep置換と同じ処理を行う</span>
+&nbsp;&nbsp;<a href="https://robotwork01.github.io/RobotWork01/RobotWork01.html">戻る</a>
+&nbsp;&nbsp;<a href="https://github.com/RobotWork01/UiPath01/blob/main/README.md">ReadMe</a>
+</div>
+<pre>
+<p>
+<div style="background-color:khaki;width:60em;height:25px;display: table-cell;vertical-align: middle;><font size="5" color="white" face="メイリオ">
+<pre><b>   ●MSDOSバッチプログラム　「PowerShell_全置換実行.bat」  </b></pre>
+</div>
+<textarea name="msdos_code" rows="35" cols="130" style="background-color: lightblue;">
+@echo off
+rem *----------------------------------------------------------------------------*
+rem * PowerShell_全置換実行.bat
+rem *
+rem *  前提条件：
+rem *    下記のファイルを同じ場所に格納すること。
+rem *    1)MSDOSバッチプログラム「PowerShell_全置換実行.bat」
+rem *    2)PowerShellスクリプト 「PowerShell_全置換.ps1」
+rem *    3)拡張子「txt」のテキストファイル群
+rem *
+rem *  引数：
+rem *    引数１　置換前の文字
+rem *    引数２　置換後の文字
+rem *
+rem *  処理説明：
+rem *    シェルスクリプト「PowerShell_全置換.ps1」を実行して
+rem *    拡張子「txt」のテキストファイルを全置換する。
+rem *
+rem *  実行方法:
+rem *    エクスプローラ上で「PowerShell_全置換実行.bat」をダブルクリック
+rem *----------------------------------------------------------------------------*
+
+rem カレントパスを退避する
+set PWD=%~dp0
+cd %PWD%
+
+rem パワーシェルアプリ起動とシェルスクリプト「PowerShell_全置換.ps1」実行
+%SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy RemoteSigned .\PowerShell_全置換.ps1 "ABC" "★"
+
+rem パワーシェルスクリプト実行
+rem PowerShell -ExecutionPolicy RemoteSigned .\PowerShell_全置換.ps1
+
+pause
+exit
+
+</textarea>
+
+<p>
+<div style="background-color:khaki;width:60em;height:25px;display: table-cell;vertical-align: middle;><font size="5" color="white" face="メイリオ">
+<pre><b>   ●PowerShellスクリプト　「PowerShell_全置換.ps1」  </b></pre>
+</div>
+<textarea name="msdos_code" rows="35" cols="130" style="background-color: lightblue;">
+#echo off
+#::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+#
+# PowerShell_全置換.ps1 （処理説明）複数ファイルの内容を検索して全置換（サクラエディタGREP置換代替）
+#
+# 実行方法1：
+#  1) Windows PowerShellプロンプトを起動する
+#  2) エクスプローラで、PowerShell_全置換.ps1を選択して右クリックし、編集を選択すると
+#     パワーシェル上のでプロンプト編集モードが起動する。
+#  3) PowerShell -ExecutionPolicy RemoteSigned .\PowerShell_全置換.ps1　と入力する
+#
+#  ※注）エクスプローラでPowerShell_全置換.ps1をダブルクリックしても起動出来ません。
+#  参考URL：
+#::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+
+# 置換前の文字列
+#$oldString = "置換前の文字列"
+#$oldString = "星"
+$oldString = $args[0]
+
+# 置換後の文字列
+#$newString = "置換後の文字列"
+#$newString = "太陽"
+$newString = $args[1]
+
+$msgString = "================<"+(Get-Date).ToString('yyyy-MM-dd hh:mm:ss') + "シェルスクリプト「PowerShell_全置換.ps1 」start...>=========="
+echo $msgString
+echo "================<引数>================"
+$argsString1 ="置換前の文字列:"+$oldString
+$argsString2 ="置換後の文字列:"+$newString
+echo $argsString1
+echo $argsString2
+
+
+#--------------------------------------------------------------------------------------------------------------------#
+#                                    置換するファイルの一覧
+#--------------------------------------------------------------------------------------------------------------------#
+#Get-ChildItem コマンドレットに -Recurse パラメータを指定しない限り、$files にはサブフォルダは含まれません。
+#つまり、foreach ループ内で Get-ChildItem の戻り値をループする際に、サブフォルダは処理されないように設計されています。
+#$files = Get-ChildItem -Path "." -Filter *.txt -Recurse
+$files = Get-ChildItem -Path "." -Filter *.txt
+
+
+IF ($files.count -eq 0) {
+    echo "対象ファイルがありません!!"
+    #goto last    ---->PowerShell には GOTO コマンドがありません。 
+    $msgString = "================<"+(Get-Date).ToString('yyyy-MM-dd hh:mm:ss') + "シェルスクリプト「PowerShell_全置換.ps1 」end!!>=========="
+    echo $msgString
+    # パワーシェルアプリ終了
+    Stop-Process -Name "powershell"
+    exit
+}
+#=======================================================#
+#             置換前の確認
+#=======================================================#
+$msgString = "================<"+(Get-Date).ToString('yyyy-MM-dd hh:mm:ss') + "■置換前の確認>=========="
+echo $msgString
+#type *.txt     #シフトJIS
+Get-ChildItem *.txt | ForEach-Object {
+    #---------------------------------------------------------#
+    #補足：
+    #typeコマンドだけだとファイル内容のみが表示されます。
+    #ファイル名と内容の両方を表示するには、
+    #Get-ChildItemコマンドレットと
+    #typeコマンドをパイプで繋げる必要があります。
+    #---------------------------------------------------------#
+    Write-Host $_.Name # ファイル名を表示
+    type $_.FullName # ファイル内容を表示
+}
+
+#cat -n  *.txt #UTF-8
+
+#----------------------------------------------------------------------------#
+#                    各ファイルを処理(検索・置換)
+#----------------------------------------------------------------------------#
+$msgString = "================<"+(Get-Date).ToString('yyyy-MM-dd hh:mm:ss') + "各ファイルを処理(検索・置換) start...>=========="
+echo $msgString
+
+foreach ($file in $files) {
+    try {
+        # ファイルのコンテンツを読み込む
+        $content = Get-Content $file.FullName
+
+        #対象ファイル名
+        echo $file.FullName
+
+        # 各行を処理し、置換する
+        $newContent = $content | ForEach-Object { $_ -replace $oldString, $newString }
+
+        # ファイルに書き戻す
+        $newContent | Out-File $file.FullName
+    }
+    catch {
+        Write-Host "各ファイルを処理(検索・置換)　An Error Occured" -ForegroundColor RED
+        Write-Host "Error message is 「" $_.Exception.Message "」" -ForegroundColor RED
+        echo "置換に失敗しました。"
+        $msgString = "================<"+(Get-Date).ToString('yyyy-MM-dd hh:mm:ss') + "シェルスクリプト「PowerShell_全置換.ps1 」end!!>=========="
+        echo $msgString
+        # パワーシェルアプリ終了
+        Stop-Process -Name "powershell"
+        exit
+    }
+    finally {
+        #------------------------------------------------------------------------------------------------------#
+        #PowerShellのfinallyブロックは、スクリプトの終了時、または現在のスコープから出るときに必ず実行されます。
+        #エラーが発生した場合でも、tryやcatchブロックの実行に関わらず、必ず実行されます。・・
+        #PowerShellのTry-Catch-Finally構造において、catchブロックで終了を指示した場合、finallyブロックは必ず実行されます。
+        #exitコマンドや他の終了方法（例: コントロール+C）を使用した場合でも同様です。
+        #finallyブロックは、スクリプトが正常に終了する場合、またはエラーが発生した場合、catchブロックで例外が処理された後、
+        #最終的に実行されるブロックです。
+        #------------------------------------------------------------------------------------------------------#
+        $Error.Clear()
+    }
+}
+
+# 処理完了
+#try
+#{
+#    (Get-Content $targetFile -ErrorAction Stop) -creplace $beforeStr,$afterStr | Out-File -Encoding default $targetFile
+#    $ws.popup("置換に成功しました。")
+#}
+#catch
+#{
+#    $ws.popup("エラー : " + $PSItem)
+#}
+$msgString = "================<"+(Get-Date).ToString('yyyy-MM-dd hh:mm:ss') + "各ファイルを処理(検索・置換) end!!>=========="
+echo $msgString
+echo "置換に成功しました。"
+
+
+#=======================================================#
+#             置換後の確認
+#=======================================================#
+$msgString = "================<"+(Get-Date).ToString('yyyy-MM-dd hh:mm:ss') + "■置換後の確認>=========="
+echo $msgString
+#type *.txt     #シフトJIS
+Get-ChildItem *.txt | ForEach-Object {
+#---------------------------------------------------------#
+#補足：
+#typeコマンドだけだとファイル内容のみが表示されます。
+#ファイル名と内容の両方を表示するには、
+#Get-ChildItemコマンドレットと
+#typeコマンドをパイプで繋げる必要があります。
+#---------------------------------------------------------#
+Write-Host $_.Name # ファイル名を表示
+type $_.FullName # ファイル内容を表示
+}
+
+#cat -n  *.txt #UTF-8
+
+# 終了メッセージ
+#$ws.popup("処理が終わりました！！")
+$msgString = "================<"+(Get-Date).ToString('yyyy-MM-dd hh:mm:ss') + "シェルスクリプト「PowerShell_全置換.ps1 」end!!>=========="
+echo $msgString
+echo "処理が終わりました！！"
+
+# パワーシェルアプリ終了
+Stop-Process -Name "powershell"
+exit
+
+</textarea>
+<p>
+<div style="background-color:khaki;width:60em;height:25px;display: table-cell;vertical-align: middle;><font size="5" color="white" face="メイリオ">
+<pre><b>   ●MSDOSバッチプログラム実行結果  </b></pre>
+</div>
+<textarea name="msdos_code" rows="35" cols="130" style="background-color: lightblue;">
+================<2025-06-14 10:30:04シェルスクリプト「PowerShell_全置換.ps1 」start...>==========
+================<引数>================
+置換前の文字列:★
+置換後の文字列:東京都
+================<2025-06-14 10:30:04■置換前の確認>==========
+input.txt
+12345あああ999\\\★D★@@@
+###★$$$$$$$$$$$$$$$$$$$$$
+logfile1.txt
+12345あああ999\\\★DERROR@@@
+###ERROR$$$$$$$$$$$$$$$$$$$$$
+logfile2.txt
+output.txt
+12345あああ999\\\★D★@@@
+###★$$$$$$$$$$$$$$$$$$$$$
+test1.txt
+12345あああ999\\\★D★@@@
+###★$$$$$$$$$$$$$$$$$$$$$
+test2.txt
+12345あああ999\\\★D★@@@
+###★$$$$$$$$$$$$$$$$$$$$$
+tmp.txt
+★defg
+================<2025-06-14 10:30:04各ファイルを処理(検索・置換) start...>==========
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\PowerShell_全置換\input.txt
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\PowerShell_全置換\logfile1.txt
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\PowerShell_全置換\logfile2.txt
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\PowerShell_全置換\output.txt
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\PowerShell_全置換\test1.txt
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\PowerShell_全置換\test2.txt
+C:\Users\XXXXX\開発技術\MSDOS（エムエスドス）\PowerShell_全置換\tmp.txt
+================<2025-06-14 10:30:04各ファイルを処理(検索・置換) end!!>==========
+置換に成功しました。
+================<2025-06-14 10:30:04■置換後の確認>==========
+input.txt
+12345あああ999\\\東京都D東京都@@@
+###東京都$$$$$$$$$$$$$$$$$$$$$
+logfile1.txt
+12345あああ999\\\東京都DERROR@@@
+###ERROR$$$$$$$$$$$$$$$$$$$$$
+logfile2.txt
+output.txt
+12345あああ999\\\東京都D東京都@@@
+###東京都$$$$$$$$$$$$$$$$$$$$$
+test1.txt
+12345あああ999\\\東京都D東京都@@@
+###東京都$$$$$$$$$$$$$$$$$$$$$
+test2.txt
+12345あああ999\\\東京都D東京都@@@
+###東京都$$$$$$$$$$$$$$$$$$$$$
+tmp.txt
+東京都defg
+================<2025-06-14 10:30:04シェルスクリプト「PowerShell_全置換.ps1 」end!!>==========
+処理が終わりました！！
+続行するには何かキーを押してください . . .
+</textarea>
+<p>
+</pre>
+</body>
+</html>
